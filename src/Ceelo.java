@@ -19,13 +19,13 @@ public class Ceelo {
         Banker banker = new Banker();
         int round = 0;
         while (banker.getChips() > 0 || (p1.isInGame() && p2.isInGame() && p3.isInGame())) {
-            System.out.print("Enter wager: ");
+            System.out.print(p1.getName() + "'s wager: ");
             int wager1 = scan.nextInt();
             p1.setWager(wager1);
-            System.out.print("Enter wager: ");
+            System.out.print(p2.getName() + "'s wager: ");
             int wager2 = scan.nextInt();
             p1.setWager(wager2);
-            System.out.print("Enter wager: ");
+            System.out.print(p3.getName() + "'s wager: ");
             int wager3 = scan.nextInt();
             p1.setWager(wager3);
             round++;
