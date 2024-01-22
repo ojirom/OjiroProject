@@ -5,6 +5,9 @@ public class Player {
     private int wager;
     private boolean inGame;
     private boolean roundWin;
+    private Die die1;
+    private Die die2;
+    private Die die3;
 
     public Player(String name) {
         this.name = name;
@@ -13,6 +16,9 @@ public class Player {
         wager = 0;
         inGame = true;
         roundWin = false;
+        die1 = new Die();
+        die2 = new Die();
+        die3 = new Die();
     }
 
     public int getChips() {
@@ -39,6 +45,22 @@ public class Player {
         return roundWin;
     }
 
+    public Die getDie1() {
+        return die1;
+    }
+
+    public Die getDie2() {
+        return die2;
+    }
+
+    public Die getDie3() {
+        return die3;
+    }
+
+    public void setChips(int chips) {
+        this.chips = chips;
+    }
+
     public void setWager(int wager) {
         this.wager = wager;
     }
@@ -47,17 +69,26 @@ public class Player {
         this.roundWin = roundWin;
     }
 
-    public void rollDice() {
+    public boolean rollDice(Banker banker) {
+        int roll1 = die1.getRoll();
+        int roll2 = die2.getRoll();
+        int roll3 = die3.getRoll();
+        boolean result = Die.results(banker.getChips(), die1, die2, die3);
+        score = roll1 + roll2 + roll3;
+        if (chips <= 0) {
+            inGame = false;
+        }
+        return result;
+    }
+
+    public void takeTurn(Banker banker) {
         if (inGame) {
-            Die die1 = new Die();
-            int roll1 = die1.getRoll();
-            Die die2 = new Die();
-            int roll2 = die2.getRoll();
-            Die die3 = new Die();
-            int roll3 = die3.getRoll();
-            Die.results(, die1, die2, die3);
-            if (chips <= 0) {
-                inGame = false;
+            if (rollDice(banker)) {
+                chips += wager;
+                banker.setChips(banker.getChips() - wager);
+            } else {
+                chips -= wager;
+                banker.setChips(banker.getChips() + wager);
             }
         }
     }
