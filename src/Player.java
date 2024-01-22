@@ -1,10 +1,10 @@
+import java.util.Scanner;
 public class Player {
     private int chips;
     private String name;
     private int score;
     private int wager;
     private boolean inGame;
-    private boolean roundWin;
     private Die die1;
     private Die die2;
     private Die die3;
@@ -15,7 +15,6 @@ public class Player {
         score = 0;
         wager = 0;
         inGame = true;
-        roundWin = false;
         die1 = new Die();
         die2 = new Die();
         die3 = new Die();
@@ -41,22 +40,6 @@ public class Player {
         return inGame;
     }
 
-    public boolean isRoundWin() {
-        return roundWin;
-    }
-
-    public Die getDie1() {
-        return die1;
-    }
-
-    public Die getDie2() {
-        return die2;
-    }
-
-    public Die getDie3() {
-        return die3;
-    }
-
     public void setChips(int chips) {
         this.chips = chips;
     }
@@ -65,19 +48,39 @@ public class Player {
         this.wager = wager;
     }
 
-    public void setRoundWin(boolean roundWin) {
-        this.roundWin = roundWin;
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
+    }
+
+    public void setWager(Scanner scan) {
+        while (inGame) {
+            System.out.print("(" + ConsoleUtility.YELLOW + chips + ConsoleUtility.RESET + ") " + name + "'s wager: ");
+            int wage = scan.nextInt();
+            if ((wage <= chips) && wage >= 0) {
+                wager = wage;
+                break;
+            }
+        }
     }
 
     public boolean rollDice(Banker banker) {
+        score = 0;
+        System.out.println(name + " rolls the dice...");
+        ConsoleUtility.sleep(1000);
+        boolean result = Die.results(banker.getScore(), die1, die2, die3);
         int roll1 = die1.getRoll();
         int roll2 = die2.getRoll();
         int roll3 = die3.getRoll();
-        boolean result = Die.results(banker.getChips(), die1, die2, die3);
-        score = roll1 + roll2 + roll3;
-        if (chips <= 0) {
-            inGame = false;
+        if (roll1 == roll2) {
+            score = roll3;
         }
+        if (roll1 == roll3) {
+            score = roll2;
+        }
+        if (roll2 == roll3) {
+            score = roll1;
+        }
+        ConsoleUtility.sleep(500);
         return result;
     }
 
@@ -86,9 +89,20 @@ public class Player {
             if (rollDice(banker)) {
                 chips += wager;
                 banker.setChips(banker.getChips() - wager);
+                System.out.println(name + ConsoleUtility.GREEN + " wins " + ConsoleUtility.RESET + ConsoleUtility.YELLOW + wager + ConsoleUtility.RESET + " chips!");
             } else {
                 chips -= wager;
                 banker.setChips(banker.getChips() + wager);
+                System.out.println(name + ConsoleUtility.RED + " loses " + ConsoleUtility.RESET + ConsoleUtility.YELLOW + wager + ConsoleUtility.RESET + " chips!");
+            }
+            ConsoleUtility.sleep(200);
+            System.out.println(name + " now has " + ConsoleUtility.YELLOW + chips + ConsoleUtility.RESET + " chips\n");
+            ConsoleUtility.sleep(3000);
+            ConsoleUtility.clearScreen();
+            if (chips <= 0) {
+                inGame = false;
+                chips = 0;
+                wager = 0;
             }
         }
     }
